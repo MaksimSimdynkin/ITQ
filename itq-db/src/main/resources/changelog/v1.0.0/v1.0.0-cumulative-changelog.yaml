@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: changelog/v1.0.0/21--22-2026--create-table-documents.yaml
+  - include:
+      file: changelog/v1.0.0/21-02-2026--create-table-document_history.yaml
+  - include:
+      file: changelog/v1.0.0/21-02-2026--create-table-approval_registry.yaml

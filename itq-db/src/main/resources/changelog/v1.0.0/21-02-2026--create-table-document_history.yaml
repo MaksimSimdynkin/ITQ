@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: 21-02-2026--create-table-document_history
+      author: MaksimSimdynkin
+      changes:
+        - createTable:
+            tableName: document_history
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_document_history
+                    nullable: false
+              - column:
+                  name: document_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: action
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: actor
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: comment
+                  type: varchar(1000)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - addCheckConstraint:
+            tableName: document_history
+            constraintName: chk_document_history_action
+            checkConstraint: "action IN ('SUBMIT','APPROVE')"
+        - addForeignKeyConstraint:
+            baseTableName: document_history
+            baseColumnNames: document_id
+            referencedTableName: documents
+            referencedColumnNames: id
+            constraintName: fk_document_history_document
+        - createIndex:
+            indexName: idx_history_document_id_created_at
+            tableName: document_history
+            columns:
+              - column:
+                  name: document_id
+              - column:
+                  name: created_at
+
