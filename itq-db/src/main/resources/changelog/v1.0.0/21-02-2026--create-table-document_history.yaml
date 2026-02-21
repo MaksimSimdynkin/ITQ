@@ -13,7 +13,6 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     primaryKeyName: pk_document_history
-                    nullable: false
               - column:
                   name: document_id
                   type: bigint
@@ -34,7 +33,7 @@ databaseChangeLog:
                   type: varchar(1000)
               - column:
                   name: created_at
-                  type: timestamp
+                  type: timestamptz
                   constraints:
                     nullable: false
         - addCheckConstraint:
