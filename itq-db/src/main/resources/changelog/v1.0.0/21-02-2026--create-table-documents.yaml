@@ -67,10 +67,6 @@ databaseChangeLog:
                   defaultValueNumeric: 0
                   constraints:
                     nullable: false
-        - addCheckConstraint:
-            tableName: documents
-            constraintName: chk_documents_status
-            checkConstraint: "status IN ('DRAFT','SUBMITTED','APPROVED')"
         - createIndex:
             indexName: idx_documents_status_id
             tableName: documents
@@ -96,3 +92,10 @@ databaseChangeLog:
               - column:
                   name: created_at
 
+        - sql:
+            dbms: postgresql
+            splitStatements: false
+            sql: |
+              ALTER TABLE documents
+              ADD CONSTRAINT chk_documents_status
+              CHECK (status IN ('DRAFT','SUBMITTED','APPROVED'));

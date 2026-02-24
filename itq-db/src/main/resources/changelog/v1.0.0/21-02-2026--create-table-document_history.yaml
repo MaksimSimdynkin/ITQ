@@ -34,12 +34,9 @@ databaseChangeLog:
               - column:
                   name: created_at
                   type: timestamptz
+                  defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
-        - addCheckConstraint:
-            tableName: document_history
-            constraintName: chk_document_history_action
-            checkConstraint: "action IN ('SUBMIT','APPROVE')"
         - addForeignKeyConstraint:
             baseTableName: document_history
             baseColumnNames: document_id
@@ -55,3 +52,10 @@ databaseChangeLog:
               - column:
                   name: created_at
 
+        - sql:
+            dbms: postgresql
+            splitStatements: false
+            sql: |
+              ALTER TABLE document_history
+              ADD CONSTRAINT chk_document_history_action
+              CHECK (action IN ('SUBMIT','APPROVE'));
