@@ -18,3 +18,26 @@ spring:
     properties:
       hibernate:
         default_schema: public
+app:
+  batchSize: 200
+  workers:
+    submit:
+      fixedDelayMs: 2000
+      enabled: true
+    approve:
+      fixedDelayMs: 2000
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    liquibase: INFO
+    org.hibernate.SQL: OFF
+    org.hibernate.orm.jdbc.bind: OFF
+
+  server:
+    servlet:
+      encoding:
+        charset: UTF-8
+        enabled: true
+        force: true

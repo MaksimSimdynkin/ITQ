@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
@@ -80,6 +81,7 @@ public class Document {
 
     @OneToMany(mappedBy = "document", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @OrderBy("createdAt ASC")
     private List<DocumentHistory> documentHistories;
 
     @OneToOne(mappedBy = "document")
