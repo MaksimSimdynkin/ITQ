@@ -6,21 +6,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.myproject.itq.config.DocumentSpecifications;
+import ru.myproject.itq.dto.BatchItemResponse;
+import ru.myproject.itq.dto.BatchWorkflowResponse;
 import ru.myproject.itq.dto.CreateDocumentRequest;
 import ru.myproject.itq.dto.DocumentDetailsDto;
 import ru.myproject.itq.dto.DocumentDto;
 import ru.myproject.itq.dto.DocumentHistoryDto;
+import ru.myproject.itq.dto.BatchWorkflowRequest;
 import ru.myproject.itq.entity.Document;
 import ru.myproject.itq.entity.DocumentHistory;
+import ru.myproject.itq.enums.BatchItemResult;
 import ru.myproject.itq.enums.DocumentStatus;
 import ru.myproject.itq.exeption.NotFoundException;
+import ru.myproject.itq.exeption.RegistryWriteFailedRuntimeException;
 import ru.myproject.itq.repository.DocumentRepository;
 import ru.myproject.itq.service.DocumentService;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,6 +37,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final DocumentRepository documentRepository;
     private final EntityManager entityManager;
+    private final DocumentWorkService documentWorkService;
 
     @Override
     @Transactional
@@ -83,6 +91,44 @@ public class DocumentServiceImpl implements DocumentService {
                 .and(DocumentSpecifications.createdTo(dateTo));
 
         return documentRepository.findAll(doc, pageable).map(this::toDto);
+    }
+
+    @Override
+    public BatchWorkflowResponse submit(BatchWorkflowRequest request) {
+        List<BatchItemResponse> result = new ArrayList<>(request.ids().size());
+
+        for (Long id : request.ids()){
+            try {
+                BatchItemResult res = documentWorkService.submitOne(id, request.initiator(), request.comment());
+                result.add(new BatchItemResponse(id, res));
+            }catch (ObjectOptimisticLockingFailureException e){
+                result.add(new BatchItemResponse(id, BatchItemResult.CONFLICT));
+            } catch (Exception e) {
+                result.add(new BatchItemResponse(id, BatchItemResult.ERROR));
+            }
+        }
+        return new BatchWorkflowResponse(result);
+    }
+
+
+
+    @Override
+    public BatchWorkflowResponse approve(BatchWorkflowRequest request) {
+        List<BatchItemResponse> result = new ArrayList<>(request.ids().size());
+
+        for (Long id : request.ids()){
+            try {
+                BatchItemResult res = documentWorkService.approveOne(id, request.initiator(), request.comment());
+                result.add(new BatchItemResponse(id, res));
+            } catch (RegistryWriteFailedRuntimeException e) {
+                result.add(new BatchItemResponse(id, BatchItemResult.REGISTRY_ERROR));
+            }catch (ObjectOptimisticLockingFailureException ex){
+                result.add(new BatchItemResponse(id, BatchItemResult.CONFLICT));
+            } catch (Exception e) {
+                result.add(new BatchItemResponse(id, BatchItemResult.ERROR));
+            }
+        }
+        return new BatchWorkflowResponse(result);
     }
 
     private DocumentDto toDto(Document d) {
