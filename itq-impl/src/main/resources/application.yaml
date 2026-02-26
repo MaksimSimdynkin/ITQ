@@ -18,15 +18,22 @@ spring:
     properties:
       hibernate:
         default_schema: public
+
+  task:
+    scheduling:
+      pool:
+        size: 2
 app:
   batchSize: 200
   workers:
     submit:
-      fixedDelayMs: 2000
-      enabled: true
+      fixedDelayMs: 20000
+      enabled: false
+      initiator: "SUBMIT-worker"
     approve:
-      fixedDelayMs: 2000
-      enabled: true
+      fixedDelayMs: 20000
+      enabled: false
+      initiator: "APPROVE-worker"
 
 logging:
   level:

@@ -84,7 +84,7 @@ public class Document {
     @OrderBy("createdAt ASC")
     private List<DocumentHistory> documentHistories;
 
-    @OneToOne(mappedBy = "document")
+    @OneToOne(mappedBy = "document", fetch = FetchType.LAZY)
     @ToString.Exclude
     private ApprovalRegistry approvalRegistry;
 
