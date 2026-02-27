@@ -1,0 +1,12 @@
+spring:
+  main:
+    web-application-type: none
+
+generator:
+  baseUrl: "http://localhost:8080"
+  n: 100
+  initiator: "generator"
+  authorPrefix: "Author"
+  titlePrefix: "Doc"
+  logEvery: 50
+  parallelism: 1

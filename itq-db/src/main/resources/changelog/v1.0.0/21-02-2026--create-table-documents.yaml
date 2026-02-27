@@ -1,0 +1,101 @@
+databaseChangeLog:
+  - changeSet:
+      id: 21-02-2026--create-sequences-documents
+      author: MaksimSimdynkin
+      changes:
+        - createSequence:
+            sequenceName: documents_id_seq
+            startValue: 1
+            incrementBy: 1
+        - createSequence:
+            sequenceName: documents_number_seq
+            startValue: 1
+            incrementBy: 1
+
+  - changeSet:
+      id: 21-02-2026--create-table-documents
+      author: MaksimSimdynkin
+      changes:
+        - createTable:
+            tableName: documents
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  defaultValueSequenceNext: documents_id_seq
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_documents
+              - column:
+                  name: number
+                  type: bigint
+                  defaultValueSequenceNext: documents_number_seq
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_documents_number
+              - column:
+                  name: author
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_documents_status_id
+            tableName: documents
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: id
+        - createIndex:
+            indexName: idx_documents_author_created_at
+            tableName: documents
+            columns:
+              - column:
+                  name: author
+              - column:
+                  name: created_at
+        - createIndex:
+            indexName: idx_documents_status_created_at
+            tableName: documents
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: created_at
+
+        - sql:
+            dbms: postgresql
+            splitStatements: false
+            sql: |
+              ALTER TABLE documents
+              ADD CONSTRAINT chk_documents_status
+              CHECK (status IN ('DRAFT','SUBMITTED','APPROVED'));

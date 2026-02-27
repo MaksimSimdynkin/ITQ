@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/soft
+    password: postgres
+    username: postgres
+  liquibase:
+    user: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/soft
+    change-log: classpath:/changelog/db.changelog-master.yaml
+    default-schema: public
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        default_schema: public
+
+  task:
+    scheduling:
+      pool:
+        size: 2
+app:
+  batchSize: 200
+  workers:
+    submit:
+      fixedDelayMs: 20000
+      enabled: true
+      initiator: "SUBMIT-worker"
+    approve:
+      fixedDelayMs: 20000
+      enabled: true
+      initiator: "APPROVE-worker"
+
+logging:
+  level:
+    root: INFO
+    liquibase: INFO
+    org.hibernate.SQL: OFF
+    org.hibernate.orm.jdbc.bind: OFF
+
+  server:
+    servlet:
+      encoding:
+        charset: UTF-8
+        enabled: true
+        force: true
