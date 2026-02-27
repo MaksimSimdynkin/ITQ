@@ -23,7 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Testcontainers
-@SpringBootTest
+@SpringBootTest(properties = {
+        "app.workers.submit.enabled=false",
+        "app.workers.approve.enabled=false"
+})
 class ApprovalRollbackIT {
 
     @Container

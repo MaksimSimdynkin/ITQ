@@ -14,7 +14,7 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         default_schema: public
@@ -28,11 +28,11 @@ app:
   workers:
     submit:
       fixedDelayMs: 20000
-      enabled: false
+      enabled: true
       initiator: "SUBMIT-worker"
     approve:
       fixedDelayMs: 20000
-      enabled: false
+      enabled: true
       initiator: "APPROVE-worker"
 
 logging:
